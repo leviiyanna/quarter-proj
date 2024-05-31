@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARJAN, RUN!</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #333;
+            padding: 6px;
+        }
+
+        .navbar a {
+            padding: 0.75em;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        .navbar a:active {
+            background-color: #444;
+        }
+
+        .navbar img {
+            width: 50px;
+            height: 50px; 
+        }
+
+        .content {
+            height: calc(100vh - 60px); 
+            background: url('https://i.pinimg.com/736x/2c/21/0b/2c210b32adb887a8308064cd6a7742fd.jpg') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        .floating-button {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .floating-button img {
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-button img:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+            }
+
+            .navbar a {
+                width: 100%;
+                text-align: center;
+                padding: 7px;
+                border-bottom: 1px solid #444;
+            }
+
+            .navbar a:last-child {
+                border-bottom: none;
+            }
+
+            .content {
+                height: calc(100vh - 100px); 
+            }
+
+            .floating-button img {
+                width: 160px; 
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#home"><img src="https://i.pinimg.com/736x/19/c6/e8/19c6e883d386d2372fa3c47c14e8fba1.jpg" alt="Home"></a>
+        <a href="#settings"><img src="https://i.pinimg.com/736x/6a/8d/ea/6a8dea32d59ee3aa5462cddb3754a56c.jpg" alt="Settings"></a>
+        <a href="#menu"><img src="https://i.pinimg.com/736x/9f/ec/a8/9feca878e35aeca3433c740815f1a628.jpg" alt="Menu"></a>
+        <a href="#pause"><img src="https://i.pinimg.com/736x/7a/d0/a0/7ad0a00ac4d1bcf6cfedd249e7b8232d.jpg" alt="Pause"></a>
+    </div>
+    <div class="content">
+        <a href="ArjanRUN.html" class="floating-button">
+            <img src="https://i.pinimg.com/originals/28/13/6b/28136b83afd6b3a10be0b98e17a039a8.png" alt="Play Button">
+        </a>
+    </div>
+</body>
+</html>

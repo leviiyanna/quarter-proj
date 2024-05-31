@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run, ARJAN, Run!</title>
+	
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #333;
+            padding: 6px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+        }
+
+        .navigation a {
+            padding: 0.75em;
+            border-radius: 4px;
+			transition: background-color 0.3s ease;
+        }
+
+        .navigation a:hover {
+            background-color: #575757;
+        }
+
+        .navigation a:active {
+            background-color: #444;
+        }
+
+        .navigation img {
+            width: 50px;
+            height: 50px; 
+        }
+
+        .content {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url("https://art.pixilart.com/f0c67138e03caef.gif") no-repeat center center;
+            background-size: cover;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #player {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            width: 200px;
+            height: 200px;
+            background: url("https://i.pinimg.com/originals/e3/37/85/e33785733a79ee3568b57424911ae562.png") no-repeat;
+            background-size: contain;
+        }
+
+        #obstacle {
+            position: absolute;
+            bottom: 20px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: url("https://i.pinimg.com/originals/18/95/5a/18955a3d3cfac0dbd6998df807370c29.png") no-repeat;
+            background-size: contain;
+            animation: moveObstacle 3s linear infinite;
+        }
+
+        @keyframes moveObstacle {
+            from {
+                right: -50px;
+            }
+            to {
+                right: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navigation {
+                flex-direction: column;
+            }
+
+            .navigation a {
+                width: 100%;
+                text-align: center;
+                padding: 7px;
+                border-bottom: 1px solid #444;
+            }
+
+            .navigation a:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+	
+</head>
+
+<body>
+
+    <div class="navigation">
+        <a href="#home"><img src="https://i.pinimg.com/736x/19/c6/e8/19c6e883d386d2372fa3c47c14e8fba1.jpg" alt="Home"></a>
+        <a href="#settings"><img src="https://i.pinimg.com/736x/6a/8d/ea/6a8dea32d59ee3aa5462cddb3754a56c.jpg" alt="Settings"></a>
+        <a href="#menu"><img src="https://i.pinimg.com/736x/9f/ec/a8/9feca878e35aeca3433c740815f1a628.jpg" alt="Menu"></a>
+        <a href="#pause"><img src="https://i.pinimg.com/736x/7a/d0/a0/7ad0a00ac4d1bcf6cfedd249e7b8232d.jpg" alt="Pause"></a>
+    </div>
+    <div class="content">
+        <div id="game-container">
+            <div id="player"></div>
+            <div id="obstacle"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = document.getElementById('player');
+            let isJumping = false;
+            let gravity = 0.9;
+            let position = 0;
+
+            function jump() {
+                if (isJumping) return;
+                let count = 0;
+                let timerId = setInterval(() => {
+                    
+                    if (count === 20) {
+                        clearInterval(timerId);
+                        let downTimerId = setInterval(() => {
+                            
+							//if mag move down
+                            if (count === 0) {
+                                clearInterval(downTimerId);
+                                isJumping = false;
+                            }
+                            position -= 5;
+                            count--;
+                            position = position * gravity;
+                            player.style.bottom = position + "px";
+                        }, 20);
+                    }
+                    position += 30;
+                    count++;
+                    position = position * gravity;
+                    player.style.bottom = position + "px";
+                    isJumping = true;
+                }, 20);
+            }
+
+            function control(e) {
+                if (e.keyCode === 32) {
+                    jump();
+                }
+            }
+
+            document.addEventListener("keydown", control);
+        });
+    </script>
+	
+</body>
+
+</html>
