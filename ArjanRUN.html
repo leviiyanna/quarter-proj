@@ -12,7 +12,7 @@
             overflow: hidden;
         }
 
-       .navigation {
+        .navigation {
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -24,26 +24,26 @@
             z-index: 10;
         }
 
-       .navigation a {
+        .navigation a {
             padding: 0.75em;
             border-radius: 4px;
 			transition: background-color 0.3s ease;
         }
 
-       .navigation a:hover {
+        .navigation a:hover {
             background-color: #575757;
         }
 
-       .navigation a:active {
+        .navigation a:active {
             background-color: #444;
         }
 
-       .navigation img {
+        .navigation img {
             width: 50px;
             height: 50px; 
         }
 
-       .content {
+        .content {
             height: 100vh;
             display: flex;
             align-items: center;
@@ -109,7 +109,7 @@
         }
 
         #game-over button:hover {
-            background-color: #444;
+            background-color: #575757;
         }
 
         @keyframes moveObstacle {
@@ -122,18 +122,18 @@
         }
 
         @media (max-width: 600px) {
-           .navigation {
+            .navigation {
                 flex-direction: column;
             }
 
-           .navigation a {
+            .navigation a {
                 width: 100%;
                 text-align: center;
                 padding: 7px;
                 border-bottom: 1px solid #444;
             }
 
-           .navigation a:last-child {
+            .navigation a:last-child {
                 border-bottom: none;
             }
         }
@@ -147,70 +147,85 @@
         <a href="#home"><img src="https://i.pinimg.com/736x/19/c6/e8/19c6e883d386d2372fa3c47c14e8fba1.jpg" alt="Home"></a>
         <a href="#settings"><img src="https://i.pinimg.com/736x/6a/8d/ea/6a8dea32d59ee3aa5462cddb3754a56c.jpg" alt="Settings"></a>
         <a href="#menu"><img src="https://i.pinimg.com/736x/9f/ec/a8/9feca878e35aeca3433c740815f1a628.jpg" alt="Menu"></a>
-        <a href="#pause"><img src="https://i.pinimg.com/736x/7a/d0/a0/7ad0a00ac4d1bcf. 
-================. 
-======================= Pause the game by pressing the pause button
-<button id="pause">Pause</button>
+        <a href="#pause"><img src="https://i.pinimg.com/736x/7a/d0/a0/7ad0a00ac4d1bcf6cfedd249e7b8232d.jpg" alt="Pause"></a>
+    </div>
+    <div class="content">
+        <div id="game-container">
+            <div id="player"></div>
+            <div id="obstacle"></div>
+            <div id="game-over">
+                <span>GAME OVER</span>
+                <button id="restart-button">Restart</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = document.getElementById('player');
+            const obstacle = document.getElementById('obstacle');
+            const gameOver = document.getElementById('game-over');
+            const restartButton = document.getElementById('restart-button');
+            let isJumping = false;
+            let gravity = 0.9;
+            let position = 0;
 
-<div id="game-container">
-    <div id="player"></div>
-    <div id="obstacle"></div>
-</div>
+            function jump() {
+                if (isJumping) return;
+                let count = 0;
+                let timerId = setInterval(() => {
+                    
+                    if (count === 20) {
+                        clearInterval(timerId);
+                        let downTimerId = setInterval(() => {
+                            
+							//if mag move down
+                            if (count === 0) {
+                                clearInterval(downTimerId);
+                                isJumping = false;
+                            }
+                            position -= 5;
+                            count--;
+                            position = position * gravity;
+                            player.style.bottom = position + "px";
+                        }, 20);
+                    }
+                    position += 30;
+                    count++;
+                    position = position * gravity;
+                    player.style.bottom = position + "px";
+                    isJumping = true;
+                }, 20);
+            }
 
-<div id="game-over">
-    <span>Game Over</span>
-    <button id="restart">Restart</button>
-</div>
+            function control(e) {
+                if (e.keyCode === 32) {
+                    jump();
+                }
+            }
 
-<script>
-    let player = document.getElementById("player");
-    let obstacle = document.getElementById("obstacle");
-    let gameOver = document.getElementById("game-over");
-    let restartButton = document.getElementById("restart");
-    let isPaused = false;
-    let playerX = 50;
-    let playerY = 20;
-    let obstacleX = -50;
-    let obstacleY = 20;
+            function checkCollision() {
+                let playerRect = player.getBoundingClientRect();
+                let obstacleRect = obstacle.getBoundingClientRect();
 
-    function handleRestart() {
-        playerX = 50;
-        playerY = 20;
-        obstacleX = -50;
-        obstacleY = 20;
-        player.style.left = playerX + "px";
-        player.style.bottom = playerY + "px";
-        obstacle.style.right = obstacleX + "px";
-        obstacle.style.bottom = obstacleY + "px";
-        gameOver.style.display = "none";
-        isPaused = false;
-    }
+                if (playerRect.right > obstacleRect.left &&
+                    playerRect.left < obstacleRect.right &&
+                    playerRect.bottom > obstacleRect.top &&
+                    playerRect.top < obstacleRect.bottom) {
+                    gameOver.style.display = 'flex';
+                }
+            }
 
-    function update() {
-        if (isPaused) {
-            return;
-        }
+            document.addEventListener("keydown", control);
+            setInterval(checkCollision, 10);
 
-        obstacleX += 2;
-        obstacle.style.right = obstacleX + "px";
-
-        if (playerX + 200 > obstacleX && playerY + 200 > obstacleY) {
-            gameOver.style.display = "flex";
-            return;
-        }
-
-        requestAnimationFrame(update);
-    }
-
-    function handlePause() {
-        isPaused = !isPaused;
-    }
-
-    document.getElementById("pause").addEventListener("click", handlePause);
-    restartButton.addEventListener("click", handleRestart);
-    update();
-</script>
-
+            restartButton.addEventListener('click', () => {
+                gameOver.style.display = 'none';
+                obstacle.style.right = '-50px';
+                player.style.bottom = '20px';
+            });
+        });
+    </script>
+	
 </body>
 
 </html>
