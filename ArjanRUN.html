@@ -12,7 +12,7 @@
             overflow: hidden;
         }
 
-       .navigation {
+        .navigation {
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -24,26 +24,26 @@
             z-index: 10;
         }
 
-       .navigation a {
+        .navigation a {
             padding: 0.75em;
             border-radius: 4px;
 			transition: background-color 0.3s ease;
         }
 
-       .navigation a:hover {
+        .navigation a:hover {
             background-color: #575757;
         }
 
-       .navigation a:active {
+        .navigation a:active {
             background-color: #444;
         }
 
-       .navigation img {
+        .navigation img {
             width: 50px;
             height: 50px; 
         }
 
-       .content {
+        .content {
             height: 100vh;
             display: flex;
             align-items: center;
@@ -81,31 +81,31 @@
         }
 
         #game-over {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: none;
-          justify-content: center;
-          align-items: center;
-          flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
-        #game-over p {
-          font-size: 48px;
-          color: #fff;
-          font-weight: bold;
+        #game-over h1 {
+            font-size: 48px;
+            color: #fff;
+            font-weight: bold;
         }
 
         #game-over button {
-          padding: 10px 20px;
-          border: none;
-          border-radius: 4px;
-          background-color: #333;
-          color: #fff;
-          cursor: pointer;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
         }
 
         @keyframes moveObstacle {
@@ -118,18 +118,18 @@
         }
 
         @media (max-width: 600px) {
-           .navigation {
+            .navigation {
                 flex-direction: column;
             }
 
-           .navigation a {
+            .navigation a {
                 width: 100%;
                 text-align: center;
                 padding: 7px;
                 border-bottom: 1px solid #444;
             }
 
-           .navigation a:last-child {
+            .navigation a:last-child {
                 border-bottom: none;
             }
         }
@@ -144,172 +144,83 @@
         <a href="#settings"><img src="https://i.pinimg.com/736x/6a/8d/ea/6a8dea32d59ee3aa5462cddb3754a56c.jpg" alt="Settings"></a>
         <a href="#menu"><img src="https://i.pinimg.com/736x/9f/ec/a8/9feca878e35aeca3433c740815f1a628.jpg" alt="Menu"></a>
         <a href="#pause"><img src="https://i.pinimg.com/736x/7a/d0/a0/7ad0a00ac4d1bcf6cfedd249e7b8232d.jpg" alt="Pause"></a>
-        <a href="#game-over" id="restart">Restart</a>
     </div>
 
     <div id="game-container">
         <div id="player"></div>
         <div id="obstacle"></div>
         <div id="game-over">
-            <p>Game Over</p>
-            <button id="restart">Restart</button>
+            <h1>GAME OVER</h1>
+            <button id="game-over-restart">Restart</button>
         </div>
     </div>
 
     <script>
-        let gameOver = false;
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = document.getElementById('player');
+            let isJumping = false;
+            let gravity = 0.9;
+            let position = 0;
+            let gameOver = false;
 
-        document.querySelector('#game-over button').addEventListener('click', () => {
-            gameOver = false;
-            document.querySelector('#game-over').style.display = 'none';
-            location.reload();
+            function jump() {
+                if (isJumping || gameOver) return;
+                let count = 0;
+                let timerId = setInterval(() => {
+                    if (count === 20) {
+                        clearInterval(timerId);
+                        let downTimerId = setInterval(() => {
+                            if (count === 0) {
+                                clearInterval(downTimerId);
+                                isJumping = false;
+                            }
+                            position -= 5;
+                            count--;
+                            position = position * gravity;
+                            player.style.bottom = position + "px";
+                        }, 20);
+                    }
+                    position += 40; // Increase the jump height
+                    count++;
+                    position = position * gravity;
+                    player.style.bottom = position + "px";
+                    isJumping = true;
+                }, 20);
+            }
+
+            function control(e) {
+                if (e.keyCode === 32) {
+                    jump();
+                }
+            }
+
+            function checkCollision() {
+                const obstacle = document.getElementById('obstacle');
+                const playerRect = player.getBoundingClientRect();
+                const obstacleRect = obstacle.getBoundingClientRect();
+
+                if (playerRect.top <= obstacleRect.bottom &&
+                    playerRect.bottom >= obstacleRect.top &&
+                    playerRect.left <= obstacleRect.right &&
+                    playerRect.right >= obstacleRect.left) {
+                    gameOver = true;
+                    obstacle.style.animation = 'none';
+                    player.style.animation = 'none';
+                    document.getElementById('game-over').style.display = 'block';
+                }
+            }
+
+            function restartGame() {
+                location.reload();
+            }
+
+            document.addEventListener("keydown", control);
+            setInterval(checkCollision, 10);
+            document.getElementById('game-over-restart').addEventListener('click', restartGame);
         });
-
-        function gameOverHandler() {
-            gameOver = true;
-            document.querySelector('#game-over').style.display = 'flex';
-        }
-
-        document.addEventListener('keydown', (event) => {
-            if (gameOver) return;
-            if (event.key === 'ArrowUp') {
-                document.querySelector('#player').style.bottom = parseInt(document.querySelector('#player').style.bottom) + 20 + 'px';
-            }
-            if (event.key === 'ArrowDown') {
-                document.querySelector('#player').style.bottom = parseInt(document.querySelector('#player').style.bottom) - 20 + 'px';
-            }
-            if (event.key === ' ') {
-                gameOverHandler();
-            }
-        });
-
-        function collisionHandler() {
-            const player = document.querySelector('#player');
-            const obstacle = document.querySelector('#obstacle');
-
-            if (
-                player.getBoundingClientRect().top <= obstacle.getBoundingClientRect().bottom &&
-                player.getBoundingClientRect().bottom >= obstacle.getBoundingClientRect().top &&
-                player.getBoundingClientRect().left <= obstacle.getBoundingClientRect().right &&
-                player.getBoundingClientRect().right >= obstacle.getBoundingClientRect().left
-            ) {
-                gameOverHandler();
-            }
-        }
-
-        setInterval(collisionHandler, 100);
     </script>
 
 </body>
 
 </html>
 
-Here's an alternative approach to create the game using an HTML5 Canvas element and JavaScript. This version uses an array to store obstacles and randomizes their position, speed, and size:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obstacle Avoidance Game</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-    </style>
-</head>
-
-<body>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        const player = {
-            x: canvas.width / 2 - 25,
-            y: canvas.height - 50,
-            width: 50,
-            height: 50,
-            speed: 10,
-            draw: function () {
-                ctx.fillStyle = 'blue';
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-            },
-        };
-
-        const obstacles = [];
-
-        function createObstacle() {
-            const obstacle = {
-                x: Math.random() * (canvas.width - 100),
-                y: 0,
-                width: 100,
-                height: Math.random() * 100 + 50,
-                speed: Math.random() * 5 + 1,
-                draw: function () {
-                    ctx.fillStyle = 'green';
-                    ctx.fillRect(this.x, this.y, this.width, this.height);
-                },
-            };
-            obstacles.push(obstacle);
-        }
-
-        function gameOver() {
-            alert('Game Over');
-            player.y = canvas.height - 50;
-            obstacles.length = 0;
-            createObstacle();
-        }
-
-        function collisionDetection() {
-            for (let i = 0; i < obstacles.length; i++) {
-                const obstacle = obstacles[i];
-                if (
-                    player.x < obstacle.x + obstacle.width &&
-                    player.x + player.width > obstacle.x &&
-                    player.y < obstacle.y + obstacle.height &&
-                    player.y + player.height > obstacle.y
-                ) {
-                    gameOver();
-                }
-            }
-        }
-
-        function update() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            player.draw();
-            for (let i = 0; i < obstacles.length; i++) {
-                const obstacle = obstacles[i];
-                obstacle.y += obstacle.speed;
-                obstacle.draw();
-                if (obstacle.y > canvas.height) {
-                    obstacle.y = 0;
-                    obstacle.x = Math.random() * (canvas.width - 100);
-                }
-            }
-            collisionDetection();
-        }
-
-        function loop() {
-            update();
-            requestAnimationFrame(loop);
-        }
-
-        createObstacle();
-        loop();
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowUp') {
-                player.y -= player.speed;
-            } else if (event.key === 'ArrowDown') {
-                player.y += player.speed;
-            }
-        });
-
-    </script>
-
-</body>
-
-</html>
