@@ -73,8 +73,8 @@
             position: absolute;
             bottom: 20px;
             right: -50px;
-            width: 100px;
-            height: 100px;
+            width: 50px;
+            height: 50px;
             background: url("https://i.pinimg.com/originals/18/95/5a/18955a3d3cfac0dbd6998df807370c29.png") no-repeat;
             background-size: contain;
             animation: moveObstacle 3s linear infinite;
@@ -93,7 +93,7 @@
             flex-direction: column;
         }
 
-        #game-over h1 {
+        #game-over span {
             font-size: 48px;
             color: #fff;
             font-weight: bold;
@@ -106,6 +106,10 @@
             background-color: #333;
             color: #fff;
             cursor: pointer;
+        }
+
+        #game-over button:hover {
+            background-color: #575757;
         }
 
         @keyframes moveObstacle {
@@ -145,31 +149,36 @@
         <a href="#menu"><img src="https://i.pinimg.com/736x/9f/ec/a8/9feca878e35aeca3433c740815f1a628.jpg" alt="Menu"></a>
         <a href="#pause"><img src="https://i.pinimg.com/736x/7a/d0/a0/7ad0a00ac4d1bcf6cfedd249e7b8232d.jpg" alt="Pause"></a>
     </div>
-
-    <div id="game-container">
-        <div id="player"></div>
-        <div id="obstacle"></div>
-        <div id="game-over">
-            <h1>GAME OVER</h1>
-            <button id="game-over-restart">Restart</button>
+    <div class="content">
+        <div id="game-container">
+            <div id="player"></div>
+            <div id="obstacle"></div>
+            <div id="game-over">
+                <span>GAME OVER</span>
+                <button id="restart-button">Restart</button>
+            </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const player = document.getElementById('player');
+            const obstacle = document.getElementById('obstacle');
+            const gameOver = document.getElementById('game-over');
+            const restartButton = document.getElementById('restart-button');
             let isJumping = false;
             let gravity = 0.9;
             let position = 0;
-            let gameOver = false;
 
             function jump() {
-                if (isJumping || gameOver) return;
+                if (isJumping) return;
                 let count = 0;
                 let timerId = setInterval(() => {
+                    
                     if (count === 20) {
                         clearInterval(timerId);
                         let downTimerId = setInterval(() => {
+                            
+							//if mag move down
                             if (count === 0) {
                                 clearInterval(downTimerId);
                                 isJumping = false;
@@ -180,7 +189,7 @@
                             player.style.bottom = position + "px";
                         }, 20);
                     }
-                    position += 40; // Increase the jump height
+                    position += 30;
                     count++;
                     position = position * gravity;
                     player.style.bottom = position + "px";
@@ -195,32 +204,28 @@
             }
 
             function checkCollision() {
-                const obstacle = document.getElementById('obstacle');
-                const playerRect = player.getBoundingClientRect();
-                const obstacleRect = obstacle.getBoundingClientRect();
+                let playerRect = player.getBoundingClientRect();
+                let obstacleRect = obstacle.getBoundingClientRect();
 
-                if (playerRect.top <= obstacleRect.bottom &&
-                    playerRect.bottom >= obstacleRect.top &&
-                    playerRect.left <= obstacleRect.right &&
-                    playerRect.right >= obstacleRect.left) {
-                    gameOver = true;
-                    obstacle.style.animation = 'none';
-                    player.style.animation = 'none';
-                    document.getElementById('game-over').style.display = 'block';
+                if (playerRect.right > obstacleRect.left &&
+                    playerRect.left < obstacleRect.right &&
+                    playerRect.bottom > obstacleRect.top &&
+                    playerRect.top < obstacleRect.bottom) {
+                    gameOver.style.display = 'flex';
                 }
-            }
-
-            function restartGame() {
-                location.reload();
             }
 
             document.addEventListener("keydown", control);
             setInterval(checkCollision, 10);
-            document.getElementById('game-over-restart').addEventListener('click', restartGame);
+
+            restartButton.addEventListener('click', () => {
+                gameOver.style.display = 'none';
+                obstacle.style.right = '-50px';
+                player.style.bottom = '20px';
+            });
         });
     </script>
-
+	
 </body>
 
 </html>
-
