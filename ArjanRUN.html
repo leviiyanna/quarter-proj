@@ -73,43 +73,39 @@
             position: absolute;
             bottom: 20px;
             right: -50px;
-            width: 50px;
-            height: 50px;
+            width: 100px;
+            height: 100px;
             background: url("https://i.pinimg.com/originals/18/95/5a/18955a3d3cfac0dbd6998df807370c29.png") no-repeat;
             background-size: contain;
             animation: moveObstacle 3s linear infinite;
         }
 
         #game-over {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: none;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
         }
 
-        #game-over span {
-            font-size: 48px;
-            color: #fff;
-            font-weight: bold;
+        #game-over p {
+          font-size: 48px;
+          color: #fff;
+          font-weight: bold;
         }
 
         #game-over button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #333;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        #game-over button:hover {
-            background-color: #575757;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 4px;
+          background-color: #333;
+          color: #fff;
+          cursor: pointer;
         }
 
         @keyframes moveObstacle {
@@ -154,8 +150,8 @@
             <div id="player"></div>
             <div id="obstacle"></div>
             <div id="game-over">
-                <span>GAME OVER</span>
-                <button id="restart-button">Restart</button>
+              <p>GAME OVER</p>
+              <button id="restart">Restart</button>
             </div>
         </div>
     </div>
@@ -163,8 +159,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const player = document.getElementById('player');
             const obstacle = document.getElementById('obstacle');
-            const gameOver = document.getElementById('game-over');
-            const restartButton = document.getElementById('restart-button');
+            const gameOverElement = document.getElementById('game-over');
+            const restartButton = document.getElementById('restart');
             let isJumping = false;
             let gravity = 0.9;
             let position = 0;
@@ -211,18 +207,29 @@
                     playerRect.left < obstacleRect.right &&
                     playerRect.bottom > obstacleRect.top &&
                     playerRect.top < obstacleRect.bottom) {
-                    gameOver.style.display = 'flex';
+                    gameOver();
                 }
             }
 
+            function gameOver() {
+              gameOverElement.style.display = 'flex';
+              obstacle.style.animation = 'none';
+              obstacle.style.right = '-50px';
+              obstacle.style.width = '50px';
+              obstacle.style.height = '50px';
+            }
+
+            restartButton.addEventListener('click', function() {
+              gameOverElement.style.display = 'none';
+              obstacle.style.animation = 'moveObstacle 3s linear infinite';
+              obstacle.style.right = '-50px';
+              obstacle.style.width = '100px';
+              obstacle.style.height = '100px';
+              player.style.bottom = '20px';
+            });
+
             document.addEventListener("keydown", control);
             setInterval(checkCollision, 10);
-
-            restartButton.addEventListener('click', () => {
-                gameOver.style.display = 'none';
-                obstacle.style.right = '-50px';
-                player.style.bottom = '20px';
-            });
         });
     </script>
 	
